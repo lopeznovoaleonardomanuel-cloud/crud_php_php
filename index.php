@@ -1,81 +1,153 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crud_PHP Practica</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <script src="https://kit.fontawesome.com/5c045f1e88.js" crossorigin="anonymous"></script>
+    <title>CRUD Persona</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <h1 class="text-center p-3">HOLA MUNDO</h1>
-    <div class="container-fluid row">
-        <form class="col-4 p-3" method="POST">
-            <h3 class="text center text-secondary">Registro de Personas</h3>
-            <?php
-            include "modelo/conexion.php";
-            include "controlador/registro_persona.php";
-            ?>
-            <div class="mb-3">
-            <label for="exampleInputEmail1" class="form-label">Nombre de la persona</label>
-             <input type="text" class="form-control" name="nombre">
-  </div>
-  <div class="mb-3">
-            <label for="exampleInputEmail1" class="form-label">Apellido de la persona</label>
-             <input type="text" class="form-control" name="Apellido">
-  </div>
-  <div class="mb-3">
-            <label for="exampleInputEmail1" class="form-label">DNI de la persona</label>
-             <input type="text" class="form-control" name="dni">
-  </div>
-  <div class="mb-3">
-            <label for="exampleInputEmail1" class="form-label">Fecha de nacimiento</label>
-             <input type="date" class="form-control" name="fecha">
-  </div>
-  <div class="mb-3">
-            <label for="exampleInputEmail1" class="form-label">Correo</label>
-             <input type="text" class="form-control" name="correo">
-  </div>
+<body class="bg-light">
 
-  <button type="submit" class="btn btn-primary" name="btnregistrar" value="ok">Registrar</button>
-</form>
-    <div class="col 8 p-4">
-    <table class="table">
-    <thead class="bg-info">
-    <tr>
-      <th scope="col">ID</th>
-      <th scope="col">NOMBRES</th>
-      <th scope="col">APELLIDO</th>
-      <th scope="col">FECHA DE NAC</th>
-      <th scope="col">DNI</th>
-      <th scope="col">CORREO</th>
-      <th scope="col"></th>
-    </tr>
-  </thead>
-  <tbody>
-    <?php
-    include "modelo/conexion.php";
-    $sql= $conexion->query(" select * from persona ");
-    while($datos=$sql->fetch_object()){ ?>
-    <tr>
-       <td><?=$datos->id ?></td>
-      <td><?=$datos->nombre ?></td>
-      <td><?=$datos->apellido ?></td>
-      <td><?=$datos->fecha_nac ?></td>
-      <td><?=$datos->dni ?></td>
-      <td><?=$datos->correo ?></td>
-      <td>
-        <a href="" class="btn btn-small btn-warning"><i class="fa-solid fa-pen-to-square"></i></a>
-        <a href="" class="btn btn-small btn-danger"><i class="fa-solid fa-delete-left"></i></a>
-      </td>
-    </tr>
-<?php }
-?>
-  </tbody>
-</table>
+<div class="container py-4">
+    <h2 class="mb-4">📋 CRUD Persona — Patrones de Diseño</h2>
+
+    <?php require_once 'controlador/registro_persona.php'; ?>
+
+    <!-- FORMULARIO REGISTRO / EDICIÓN -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">Registrar / Editar Persona</div>
+        <div class="card-body">
+            <form method="POST">
+                <input type="hidden" name="id" id="id">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" name="nombre" id="nombre" class="form-control" maxlength="50">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Apellido</label>
+                        <input type="text" name="apellido" id="apellido" class="form-control" maxlength="50">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">DNI</label>
+                        <input type="text" name="dni" id="dni" class="form-control" maxlength="8">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Fecha de Nacimiento</label>
+                        <input type="date" name="fecha_nac" id="fecha_nac" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Correo</label>
+                        <input type="email" name="correo" id="correo" class="form-control" maxlength="100">
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <button type="submit" name="btnregistrar" class="btn btn-success" id="btnRegistrar">
+                        ➕ Registrar
+                    </button>
+                    <button type="submit" name="btnactualizar" class="btn btn-warning d-none" id="btnActualizar">
+                        ✏️ Actualizar
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="limpiarFormulario()">
+                        🔄 Limpiar
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-</body>
+    <!-- TABLA DE PERSONAS -->
+    <div class="card">
+        <div class="card-header bg-dark text-white">Lista de Personas</div>
+        <div class="card-body p-0">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>DNI</th>
+                        <th>Fecha Nac.</th>
+                        <th>Correo</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (!empty($personas)): ?>
+                        <?php foreach ($personas as $p): ?>
+                            <?php $persona = \PersonaFactory::crearDesdeBD($p); ?>
+                            <tr>
+                                <td><?= $persona['id'] ?></td>
+                                <td><?= htmlspecialchars($persona['nombre']) ?></td>
+                                <td><?= htmlspecialchars($persona['apellido']) ?></td>
+                                <td><?= htmlspecialchars($persona['dni']) ?></td>
+                                <td><?= htmlspecialchars($persona['fecha_nac']) ?></td>
+                                <td><?= htmlspecialchars($persona['correo']) ?></td>
+                                <td>
+                                    <button class="btn btn-warning btn-sm"
+                                        onclick="cargarEdicion(
+                                            <?= $persona['id'] ?>,
+                                            '<?= addslashes($persona['nombre']) ?>',
+                                            '<?= addslashes($persona['apellido']) ?>',
+                                            '<?= addslashes($persona['dni']) ?>',
+                                            '<?= $persona['fecha_nac'] ?>',
+                                            '<?= addslashes($persona['correo']) ?>'
+                                        )">✏️ Editar</button>
+                                    <a href="?eliminar=<?= $persona['id'] ?>"
+                                       class="btn btn-danger btn-sm"
+                                       onclick="return confirm('¿Eliminar esta persona?')">
+                                        🗑️ Eliminar
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-3">No hay personas registradas</td>
+                        </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
+    <!-- Nota de patrones aplicados -->
+    <div class="mt-4 p-3 bg-white border rounded">
+        <h6>🏗️ Patrones de diseño aplicados:</h6>
+        <ul class="mb-0">
+            <li><strong>Singleton</strong> — <code>config/Database.php</code>: una única conexión PDO a la BD</li>
+            <li><strong>Repository</strong> — <code>repository/PersonaRepository.php</code>: todo el SQL centralizado</li>
+            <li><strong>Factory</strong> — <code>factory/PersonaFactory.php</code>: construcción de datos de Persona</li>
+        </ul>
+    </div>
+</div>
+
+<script>
+function cargarEdicion(id, nombre, apellido, dni, fecha_nac, correo) {
+    document.getElementById('id').value       = id;
+    document.getElementById('nombre').value   = nombre;
+    document.getElementById('apellido').value = apellido;
+    document.getElementById('dni').value      = dni;
+    document.getElementById('fecha_nac').value= fecha_nac;
+    document.getElementById('correo').value   = correo;
+
+    document.getElementById('btnRegistrar').classList.add('d-none');
+    document.getElementById('btnActualizar').classList.remove('d-none');
+    window.scrollTo(0, 0);
+}
+
+function limpiarFormulario() {
+    document.getElementById('id').value        = '';
+    document.getElementById('nombre').value    = '';
+    document.getElementById('apellido').value  = '';
+    document.getElementById('dni').value       = '';
+    document.getElementById('fecha_nac').value = '';
+    document.getElementById('correo').value    = '';
+
+    document.getElementById('btnRegistrar').classList.remove('d-none');
+    document.getElementById('btnActualizar').classList.add('d-none');
+}
+</script>
+
+</body>
 </html>
